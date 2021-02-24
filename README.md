@@ -1,2 +1,2 @@
 # grafos
-Graph's Course Repository 
+Graph's Course Repository - PUC Minas 
