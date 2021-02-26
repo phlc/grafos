@@ -88,6 +88,22 @@ public:
     
     //Methods
     /*
+    print - mostra a matriz
+    */
+    void print(){
+        for(int i=0; i<v_max-1; i++){
+            cout << i << " | ";
+        }
+        cout << (v_max-1) << endl;
+        for (int i=0; i<v_max-1; i++){
+            for(int j=0; j<v_max-1; j++){
+                cout << matrix[i][j] << " | ";
+            }
+            cout << matrix[i][v_max-1] << endl;
+        }
+    }
+
+    /*
     isDirected - informa se o grafo é direcionado
     @return verdadeiro se direcionado, falso se não-direcionado
     */
@@ -192,4 +208,5 @@ int main(){
     cout << "Insira o número de vértices:" <<endl;
     cin >> n_vertices;
     Graph grafo = Graph(n_vertices, true, false);
+    grafo.print();
 }
