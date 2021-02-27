@@ -103,15 +103,18 @@ public:
         else{
             cout << "Não-Direcionado" << endl;
         }
+        cout << "  || ";
         for(int i=0; i<v_max-1; i++){
             cout << i << " | ";
         }
         cout << (v_max-1) << endl;
+        cout << "- - - ";
         for(int i=0; i<v_max-1; i++){
             cout << "- - ";
         }
         cout << "-" << endl;
-        for (int i=0; i<v_max-1; i++){
+        for (int i=0; i<v_max; i++){
+            cout << i << " || ";
             for(int j=0; j<v_max-1; j++){
                 cout << matrix[i][j] << " | ";
             }
