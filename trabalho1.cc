@@ -91,6 +91,18 @@ public:
     print - mostra a matriz
     */
     void print(){
+        if(isSimple()){
+            cout << "Grafo Simples ";
+        }
+        else{
+            cout << "Multigrafo "; 
+        }
+        if(isDirected()){
+            cout << "Direcionado" << endl;
+        }
+        else{
+            cout << "Não-Direcionado" << endl;
+        }
         for(int i=0; i<v_max-1; i++){
             cout << i << " | ";
         }
@@ -164,13 +176,16 @@ public:
                 i+=matrix[i][vertex];
                 matrix[i][vertex] = 0;
             }
+            n_vertices--;
         }
         return i-1;
     }
     /*
     addEdge - acrescenta uma aresta
     Se simples, apenas se v1!=v2 && matrix(v1,v2)==0
-    Se não-direcionado matrix(v1,v2)=matrix(v2,v1) 
+    Se não-direcionado matrix(v1,v2)=matrix(v2,v1)
+    @param vértice 1 e vértice 2
+    @return true para acrescento || false
 
     */
     bool addEdge(int v1, int v2){
@@ -198,6 +213,37 @@ public:
         }
         return added;
     }
+
+    /*
+    removeEdge - remove uma aresta
+    @param vértice 1 e vértice 2
+    @return true para removido || false
+    */
+    bool removeEdge (int v1, int v2){
+        bool removed = false;
+        
+        //verificar se os vértices existem
+        if(matrix[v1][v1]!=0 && matrix[v2][v2]!=0){
+            
+            //Grafo Simples
+            if(isSimple()){
+                if(v1!=v2 && matrix[v1][v2]==1){
+                    matrix[v1][v2]=0;
+                    removed = true;
+                }    
+            }
+            //Multigrafo
+            else if(matrix[v1][v2]!=0){
+                matrix[v1][v2]--;
+                removed = true;
+            }
+            //Grafo Não-Direcionado
+            if(removed && !isDirected()){
+                matrix[v2][v1]--;
+            }
+        }
+        return removed;
+    } 
 };
 
 /*
@@ -208,5 +254,20 @@ int main(){
     cout << "Insira o número de vértices:" <<endl;
     cin >> n_vertices;
     Graph grafo = Graph(n_vertices, true, false);
+    grafo.print();
+    int Va = grafo.addVertex();
+    grafo.print();
+    int Vb = grafo.addVertex();
+    grafo.print();
+    grafo.addEdge(Va, Vb);
+    grafo.print();
+    grafo.removeEdge(Va, Vb);
+    grafo.print();
+    int Vc = grafo.addVertex();
+    grafo.print();
+    grafo.addEdge(Va, Vc);
+    grafo.addEdge(Vb, Vc);
+    grafo.print();
+    grafo.removeVertex(Va);
     grafo.print();
 }
