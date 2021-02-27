@@ -174,11 +174,11 @@ public:
     int removeVertex(int vertex){
         int i=0;
         if(matrix[vertex][vertex]!=0){
-            for(int i=0; i<v_max; i++){
-                i+=matrix[vertex][i];
-                matrix[vertex][i] = 0;
-                i+=matrix[i][vertex];
-                matrix[i][vertex] = 0;
+            for(int j=0; j<v_max; j++){
+                i+=matrix[vertex][j];
+                matrix[vertex][j] = 0;
+                i+=matrix[j][vertex];
+                matrix[j][vertex] = 0;
             }
             n_vertices--;
         }
