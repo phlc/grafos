@@ -92,7 +92,7 @@ public:
     */
     void print(){
         if(isSimple()){
-            cout << "Grafo Simples ";
+            cout << endl << "Grafo Simples ";
         }
         else{
             cout << "Multigrafo "; 
@@ -107,6 +107,10 @@ public:
             cout << i << " | ";
         }
         cout << (v_max-1) << endl;
+        for(int i=0; i<v_max-1; i++){
+            cout << "- - ";
+        }
+        cout << "-" << endl;
         for (int i=0; i<v_max-1; i++){
             for(int j=0; j<v_max-1; j++){
                 cout << matrix[i][j] << " | ";
