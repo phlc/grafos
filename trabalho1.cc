@@ -260,13 +260,15 @@ int main(){
     int n_vertices;
     cout << "Insira o número de vértices:" <<endl;
     cin >> n_vertices;
-    Graph grafo = Graph(n_vertices, true, false);
+    Graph grafo = Graph(n_vertices, true, true);
     grafo.print();
     int Va = grafo.addVertex();
     grafo.print();
     int Vb = grafo.addVertex();
     grafo.print();
     grafo.addEdge(Va, Vb);
+    grafo.print();
+    grafo.addEdge(Vb, Va);
     grafo.print();
     grafo.removeEdge(Va, Vb);
     grafo.print();
