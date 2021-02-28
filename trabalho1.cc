@@ -73,9 +73,9 @@ public:
     Graph(int size){
         init(size, true, false);
     }
-    //Construtor grafo tamnho 10, simples, não-direcionado
+    //Construtor grafo tamnho 5, simples, não-direcionado
     Graph(){
-        init(10, true, false);
+        init(5, true, false);
     }
 
     //Destructor
@@ -146,11 +146,19 @@ public:
     }
 
     /*
-    nVertices - inform ao número de vértices do grafo
+    nVertices - informa o número de vértices do grafo
     @return número de vértices
     */
     int nVertices(){
         return n_vertices;
+    }
+
+    /*
+    nMax - informa o número máximo de vértices do grafo
+    @return número máximo de vértices
+    */
+    int nMax(){
+        return v_max;
     }
 
     /*
@@ -251,6 +259,66 @@ public:
         }
         return removed;
     } 
+};
+
+/* Valued_Graph Class - Classe de Implementação de Valoração das Arestas
+Opção para Grafos direcionados e não direcionados, simples e multigrafos.
+Estrutura de dados para valoração: matriz n x n x m
+n = número máximo de vértices
+m = número máximo de arestas paralelas a serem valoradas
+Matrix(x,y,z) = 0 -> Aresta não valorada
+Matrix(x,y,z) > 0 -> Aresta valorada
+Para facilitar compreensão:
+* Índice das Arestas m = 1 para grafos simples e m >= 1 para multigrafos, Loops m >= 2
+*/
+
+class Valued_Graph : public Graph{
+private:
+    int*** value_matrix;
+    int e_max; // número máximo de arestas
+
+    void init(int edges){
+        e_max = edges;
+        edges+=2;
+        int v_max = Graph::nMax();
+        value_matrix = new int**[v_max];
+        for(int i=0; i<v_max; i++){
+            value_matrix[i] = new int*[v_max];
+            for(int j=0; j<v_max; j++){
+                value_matrix[i][j] = new int[edges];
+                for(int k=0; k<edges; k++){
+                    value_matrix[i][j][k] = 0;
+                }
+            }
+        }
+
+    }
+    /*
+    Constructors
+    */
+    //Construtor completo
+    Valued_Graph(int size, bool simple, bool directed, int edges): Graph(size, simple, directed){
+        init(edges);
+    }
+    //Construtor grafo simples, não-direcionado, 
+    Valued_Graph(int size): Graph(size){
+        init(0);
+    }
+    //Construtor grafo tamnho 5, simples, não-direcionado, 5
+    Valued_Graph(): Graph(){
+        init(0);
+    }
+
+    //Destructor
+    ~Valued_Graph(){
+        int v_max = Graph::nMax();
+        for(int i=0; i<v_max; i++){
+            for(int j=0; j<v_max; j++){
+                delete[] value_matrix[i][j];
+            }
+        }
+        delete[] value_matrix;
+    }
 };
 
 /*
