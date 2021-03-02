@@ -384,7 +384,7 @@ public:
         //verificar se houve inclusão
         if(control!=-1){
             index = 0;
-            while (value_matrix[v1][v2][index] == 0x8000000){
+            while (value_matrix[v1][v2][index] != 0x80000000){
                 index++;
             }
             if(index>=e_max){
@@ -433,5 +433,18 @@ Main - Main Function
 int main(){
     Valued_Graph grafo = Valued_Graph(5, false, true, 2);
     grafo.print();
-    
+    int v1 = grafo.addVertex();
+    grafo.print();
+    int v2 = grafo.addVertex();
+    grafo.print();
+    int a1 = grafo.addEdge(v1,v2, 4);
+    grafo.print();
+    int a2 = grafo.addEdge(v1,v2, 8);
+    grafo.print();
+    grafo.removeEdge(v1,v2,a1);
+    grafo.print();
+    int a3 = grafo.addEdge(v1,v2,16);
+    grafo.print();
+    grafo.removeVertex(v1);
+    grafo.print();
 }
