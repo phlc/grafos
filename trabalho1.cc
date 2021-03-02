@@ -200,11 +200,11 @@ public:
     Se simples, apenas se v1!=v2 && matrix(v1,v2)==0
     Se não-direcionado matrix(v1,v2)=matrix(v2,v1)
     @param vértice 1 e vértice 2
-    @return true para acrescento || false
-
+    @return -1 para falha, >=1 número de arestas
+    * para loop, o número de arestas = n-1 -> 1 indica a existência do vértice
     */
-    bool addEdge(int v1, int v2){
-        bool added = false;
+    int addEdge(int v1, int v2){
+        int n = 0;
         
         //verificar se os vértices existem
         if(matrix[v1][v1]!=0 && matrix[v2][v2]!=0){
@@ -213,29 +213,32 @@ public:
             if(isSimple()){
                 if(v1!=v2 && matrix[v1][v2]==0){
                     matrix[v1][v2]=1;
-                    added = true;
+                    n = 1;
                 }    
             }
             //Multigrafo
             else{
-                matrix[v1][v2]++;
-                added = true;
+                n = ++matrix[v1][v2];
             }
             //Grafo Não-Direcionado
-            if(added && !isDirected()){
+            if(n!=0 && !isDirected()){
                 matrix[v2][v1]++;
             }
         }
-        return added;
+        if(v1==v2){
+            n--;
+        }
+        return n;
     }
 
     /*
     removeEdge - remove uma aresta
-    @param vértice 1 e vértice 2
-    @return true para removido || false
+    @param vértice 1, vértice 2
+    @return -1 para falha || >=0 número de arestas restantes
+    * 
     */
-    bool removeEdge (int v1, int v2){
-        bool removed = false;
+    int removeEdge (int v1, int v2){
+        int n = -1;
         
         //verificar se os vértices existem
         if(matrix[v1][v1]!=0 && matrix[v2][v2]!=0){
@@ -244,20 +247,22 @@ public:
             if(isSimple()){
                 if(v1!=v2 && matrix[v1][v2]==1){
                     matrix[v1][v2]=0;
-                    removed = true;
+                    n = 1;
                 }    
             }
             //Multigrafo
-            else if(matrix[v1][v2]!=0){
-                matrix[v1][v2]--;
-                removed = true;
+            else if(v1==v2 && matrix[v1][v2]>=2){
+                n = --matrix[v1][v2];
+            }
+            else if(v1!=v2 && matrix[v1][v2]>=1){
+                n = --matrix[v1][v2];
             }
             //Grafo Não-Direcionado
-            if(removed && !isDirected()){
+            if(n!=-1 && !isDirected()){
                 matrix[v2][v1]--;
             }
         }
-        return removed;
+        return n;
     } 
 };
 
@@ -266,10 +271,8 @@ Opção para Grafos direcionados e não direcionados, simples e multigrafos.
 Estrutura de dados para valoração: matriz n x n x m
 n = número máximo de vértices
 m = número máximo de arestas paralelas a serem valoradas
-Matrix(x,y,z) = 0 -> Aresta não valorada
-Matrix(x,y,z) > 0 -> Aresta valorada
-Para facilitar compreensão:
-* Índice das Arestas m = 1 para grafos simples e m >= 1 para multigrafos, Loops m >= 2
+Matrix(x,y,z) = 0x8000000 -> Aresta não valorada
+Matrix(x,y,z) != 0x8000000 -> Aresta valorada, admite valor zero
 */
 
 class Valued_Graph : public Graph{
@@ -279,20 +282,21 @@ private:
 
     void init(int edges){
         e_max = edges;
-        edges+=2;
         int v_max = Graph::nMax();
         value_matrix = new int**[v_max];
         for(int i=0; i<v_max; i++){
             value_matrix[i] = new int*[v_max];
             for(int j=0; j<v_max; j++){
                 value_matrix[i][j] = new int[edges];
-                for(int k=0; k<edges; k++){
-                    value_matrix[i][j][k] = 0;
+                for(int k=0; k<e_max; k++){
+                    value_matrix[i][j][k] = 0x80000000;
                 }
             }
         }
 
     }
+
+public:
     /*
     Constructors
     */
@@ -302,11 +306,11 @@ private:
     }
     //Construtor grafo simples, não-direcionado, 
     Valued_Graph(int size): Graph(size){
-        init(0);
+        init(1); // Grafo Simples - Não tem loops ou arestas paralelas
     }
     //Construtor grafo tamnho 5, simples, não-direcionado, 5
     Valued_Graph(): Graph(){
-        init(0);
+        init(1); // Grafo Simples - Não tem loops ou arestas paralelas
     }
 
     //Destructor
@@ -319,32 +323,115 @@ private:
         }
         delete[] value_matrix;
     }
+
+    //Methods
+    /*
+    print - mostra a matriz e a matriz de valores
+    */
+    void print(){
+        Graph::print();
+        int v_max = Graph::nMax();
+        cout << endl;
+        for(int i=0; i<v_max; i++){
+            for(int j=0; j<v_max; j++){
+                cout << "Value_Matrix (" << i << ", " << j << "): ";
+                for (int k=0; k<e_max-1; k++){
+                    if(value_matrix[i][j][k] == 0x80000000){
+                        cout << "_ ";
+                    }
+                    else{
+                            cout << value_matrix[i][j][k] << "  ";
+                    }
+                }
+                if(value_matrix[i][j][e_max-1] == 0x80000000){
+                        cout << "_ " << endl;
+                }
+                else{
+                    cout << value_matrix[i][j][e_max-1] << endl;
+                }
+           }
+       }
+   }
+    /*removeVertex - remove um vértice, todas arestas incidentes e suas valorações
+    @param índice do vértice
+    @return -1 se vértice inexistente ou número de arestas excluídas com o vértice
+    */
+    int removeVertex(int vertex){
+        int control= Graph::removeVertex(vertex);
+        int v_max = Graph::nMax();
+        if(control!=-1){
+            for(int i=0; i<v_max; i++){
+                for(int j=0; j<e_max; j++){
+                    value_matrix[vertex][i][j] = 0x80000000;
+                    value_matrix[i][vertex][j] = 0x80000000;
+                }
+            }
+        }
+        return control;
+    }
+    
+    /*
+    addEdge - acrescenta uma aresta valorada
+    Se simples, apenas se v1!=v2 && matrix(v1,v2)==0
+    Se não-direcionado matrix(v1,v2)=matrix(v2,v1)
+    @param vértice 1, vértice 2, valor
+    @return -1 para falha, >=0 índice da arestas
+    */
+    int addEdge(int v1, int v2, int value){
+        int control = Graph::addEdge(v1, v2);
+        int index = -1;
+
+        //verificar se houve inclusão
+        if(control!=-1){
+            index = 0;
+            while (value_matrix[v1][v2][index] == 0x8000000){
+                index++;
+            }
+            if(index>=e_max){
+                index = -1;
+            }
+            else{
+                value_matrix[v1][v2][index] = value;
+            }
+        }
+        return index;
+    }
+
+    /*
+    removeEdge - remove uma aresta valorada
+    @param vértice 1, vértice 2, indice da aresta a ser removida
+    @return -1 para falha || >=0 número de arestas restantes
+    * 
+    */
+    int removeEdge (int v1, int v2, int index){
+        int control = -1;
+        //verificar se os vértices existem
+        if(value_matrix[v1][v2][index]!=0x80000000){
+            value_matrix[v1][v2][index]=0x80000000;
+            control = Graph::removeEdge(v1, v2);
+        }
+        return control;
+    } 
+    /*
+    Overload para grafos simples
+    @param vertice 1, vertice 2;
+    @return -1 falha || 0 sucesso
+    */
+    int removeEdge(int v1, int v2){
+        int control = -1;
+        if(Graph::isSimple() && value_matrix[v1][v2][0]!=0x80000000){
+            value_matrix[v1][v2][0]=0x80000000;
+            control = Graph::removeEdge(v1, v2);
+        }
+        return control;
+    }
 };
 
 /*
 Main - Main Function
 */
 int main(){
-    int n_vertices;
-    cout << "Insira o número de vértices:" <<endl;
-    cin >> n_vertices;
-    Graph grafo = Graph(n_vertices, true, true);
+    Valued_Graph grafo = Valued_Graph(5, false, true, 2);
     grafo.print();
-    int Va = grafo.addVertex();
-    grafo.print();
-    int Vb = grafo.addVertex();
-    grafo.print();
-    grafo.addEdge(Va, Vb);
-    grafo.print();
-    grafo.addEdge(Vb, Va);
-    grafo.print();
-    grafo.removeEdge(Va, Vb);
-    grafo.print();
-    int Vc = grafo.addVertex();
-    grafo.print();
-    grafo.addEdge(Va, Vc);
-    grafo.addEdge(Vb, Vc);
-    grafo.print();
-    grafo.removeVertex(Va);
-    grafo.print();
+    
 }
