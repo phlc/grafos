@@ -103,22 +103,30 @@ public:
         else{
             cout << "Não-Direcionado" << endl;
         }
-        cout << "  || ";
+        cout << "   ||";
         for(int i=0; i<v_max-1; i++){
-            cout << i << " | ";
+            printf("%2d |", i);
         }
         cout << (v_max-1) << endl;
-        cout << "- - - ";
+        cout << "- - - -";
         for(int i=0; i<v_max-1; i++){
-            cout << "- - ";
+            cout << " - -";
         }
-        cout << "-" << endl;
+        cout << endl;
         for (int i=0; i<v_max; i++){
-            cout << i << " || ";
+            printf("%2d ||", i);
             for(int j=0; j<v_max-1; j++){
-                cout << matrix[i][j] << " | ";
+                if(i==j)
+                    printf("%2d*|", matrix[i][j]);
+                else
+                    printf("%2d |", matrix[i][j]);
             }
-            cout << matrix[i][v_max-1] << endl;
+            cout << " ";
+            cout << matrix[i][v_max-1];
+            if(i==v_max-1)
+                cout << "*" << endl;
+            else
+                cout << endl;
         }
     }
 
@@ -206,6 +214,9 @@ public:
     int addEdge(int v1, int v2){
         int n = 0;
         
+        //verificar valores validos
+        if(v1>=v_max || v2>=v_max)
+            return -1;
         //verificar se os vértices existem
         if(matrix[v1][v1]!=0 && matrix[v2][v2]!=0){
             
