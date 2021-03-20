@@ -10,7 +10,7 @@ Desafio Finding Bridges
 
 //Dependencies
 #include <iostream>
-#include "graph_matrix.cc"
+#include "valued_graph.cc"
 
 using namespace std;
 
