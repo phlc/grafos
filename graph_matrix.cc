@@ -327,9 +327,7 @@ public:
                 //registrar v como pai de v_son - OBS: como v é vértice inicial !precisa verificar se v_son visitado
                 parents[v_son] =  v;
                 //chamar findBridges recursivamente
-cout << "in: " << v_son << endl;
                 findBridges(v_son, bridges, parents, visited, discoveryTime, time);
-cout << "out: " << v_son << endl;
             }
         }
 
@@ -368,9 +366,7 @@ private:
                         //registrar v como pai de v_son
                         parents[v_son] = v;
                         //chamar findBridges recursivamente
-cout << "in: " << v_son << endl;
                         findBridges(v_son, bridges, parents, visited, discoveryTime, time);
-cout << "out: " << v_son << endl;
                     }
                     //se já visitado
                     //verificar se tempo de entrada pai maior que filho
@@ -384,7 +380,6 @@ cout << "out: " << v_son << endl;
                             bridges[son][parent] = -1;
                             son = parent;
                             parent = parents[parent];
-cout << v_son << " " << parent << " " << son << endl;
                         }while(son != v_son);
                     }
                 } 
