@@ -14,14 +14,6 @@ First Graph's Implementation
 //Dependencies
 #include <iostream>
 
-//Definitions
-//edgeNode - Nó de uma lista de arestas
-typedef struct edgeNode{
-    int v1 = -1;
-    int v2 = -1;
-    edgeNode* next = NULL;
-}edgeNode;
-
 //Namespade
 using namespace std;
 
@@ -288,28 +280,111 @@ public:
     /*
     findBridges - Encontra as pontes do grafo.
     @param - vértice de início
-    @return - arranjo com as arestas pontes.
+    @return - matrix "bridges" com as arestas pontes.
+    bridges(x,y) =  0  -> aresta inexistente
+    bridges(x,y) =  1  -> aresta ponte
+    bridges(x,y) = -1  -> aresta não ponte
     */
-    edgeNode* findBridges(int v){
+    int** findBridges(int v){
+        //Testar para vértice válido
+        if(v>=v_max || matrix[v][v]==0)
+            return NULL;
+        
         //definitions
-        edgeNode* bridges = new edgeNode;
-        int parent[v_max];
+        int** bridges = new int*[v_max];
+        for(int i=0; i<v_max; i++){
+            bridges[i] = new int[v_max];
+            //inicializar linha
+            for(int j=0; j<v_max; j++){
+                bridges[i][j] = 0;
+            }
+        }
+        int parents[v_max];
         int visited[v_max];
         int discoveryTime[v_max];
         int time = 0;
 
+        //inicializar arranhos
         for(int i=0; i<v_max; i++){
-            parent[i]=visited[i]=discoveryTime[i]=-1;
+            parents[i]=visited[i]=discoveryTime[i]=-1;
+        }
+
+        //marcar v como visitado
+        visited[v] = 1;
+
+        //registrar discoveryTime de v
+        discoveryTime[v] = time++;
+
+        //registrar pai de v como ele mesmo -> vértice inicial
+        parents[v] = v;
+
+        //chamar findBridges recursivamente para todos os filhos
+        for (int i=1; i<v_max; i++){
+            int v_son = (v+i)%v_max; // todos menos ele próprio
+
+            //verificar se aresta existe
+            if(matrix[v][v_son]!=0){
+                //registrar v como pai de v_son - OBS: como v é vértice inicial !precisa verificar se v_son visitado
+                parents[v_son] =  v;
+                //chamar findBridges recursivamente
+                findBridges(v_son, bridges, parents, visited, discoveryTime, time);
+            }
+        }
+
+        //marcar as pontes
+        for(int i=0; i<v_max; i++){
+            for(int j=0; j<v_max; j++){
+                if(i!=j && matrix[i][j]!=0 && bridges[i][j]==0){
+                    bridges[i][j]=1;
+                }
+            }
         }
         return bridges;
     }
 
 private:
     /*findBridges - Overload
-    @param - vértice, edgeNode, parent[], visited[], discoveryTime[], &time 
+    @param - vértice, edgeNode, parents[], visited[], discoveryTime[], &time 
     */
-    void findBridges(int v, edgeNode* node, int parent[], int visited[], int discoveryTime[], int &time){
-        
+    void findBridges(int v, int** bridges, int parents[], int visited[], int discoveryTime[], int &time){
+        //marcar v como visitado
+        visited[v] = 1;
+
+        //registrar discoveryTime de v
+        discoveryTime[v] = time++;
+
+        //chamar findBrigdes recursivamente para todos os filhos
+        for (int i=1; i<v_max; i++){
+            int v_son = (v+i)%v_max; // todos menos ele próprio
+
+            //verificar se aresta exite
+            if(matrix[v][v_son]!=0){
+                //verificar se v_son não é pai de v
+                if(parents[v]!=v_son){
+                    //verificar se v_son já foi visitado
+                    if(visited[v_son]!=1){
+                        //registrar v como pai de v_son
+                        parents[v_son] = v;
+                        //chamar findBridges recursivamente
+                        findBridges(v_son, bridges, parents, visited, discoveryTime, time);
+                    }
+                    //se já visitado
+                    else{
+                        //voltar pela árvore até v_son marcando as arestas como não ponte
+                        int son = v_son;
+                        int parent = v;
+                        do{
+                            bridges[parent][son] = -1;
+                            //implementação apenas para grafos simples
+                            bridges[son][parent] = -1;
+                            int buffer = parent;
+                            parent = parents[parent];
+                            son = parent;
+                        }while(parent != v_son);
+                    }
+                } 
+            }
+        }
     } 
 public:
 };

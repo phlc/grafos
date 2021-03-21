@@ -38,4 +38,15 @@ int main(){
     grafo.addEdge(8, 9);
     grafo.addEdge(9, 10);
     grafo.print();
+
+    int** bridges = grafo.findBridges(0);
+
+    //mostrar pontes
+    for (int i=0; i<12; i++){
+        for (int j=0; j<12; j++){
+            if(bridges[i][j]==1){
+                cout << "("<< i << ", " << j << ") " << endl;
+            }
+        }
+    }
 }
