@@ -39,6 +39,8 @@ int main(){
     grafo.addEdge(9, 10);
     grafo.print();
 
+    cout << endl;
+    
     int** bridges = grafo.findBridges(0);
 
     //mostrar pontes

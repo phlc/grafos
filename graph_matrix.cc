@@ -366,6 +366,7 @@ private:
                         //registrar v como pai de v_son
                         parents[v_son] = v;
                         //chamar findBridges recursivamente
+cout << v_son << endl;
                         findBridges(v_son, bridges, parents, visited, discoveryTime, time);
                     }
                     //se já visitado
@@ -380,6 +381,7 @@ private:
                             int buffer = parent;
                             parent = parents[parent];
                             son = parent;
+cout << v_son << " " << parent << endl;
                         }while(parent != v_son);
                     }
                 } 
