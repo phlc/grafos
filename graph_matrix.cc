@@ -9,6 +9,9 @@ First Graph's Implementation
 - Not-Directed Not-Valued
 - Directed Valued
 - Not-Directed Valued
+
+Desafio 1
+- Finding Bridges
 */
 
 //Dependencies

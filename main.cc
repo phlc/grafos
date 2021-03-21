@@ -4,8 +4,6 @@ Grafos - Manhã
 Pedro Henrique Lima Carvalho
 
 Desafio Finding Bridges
-- Deep Search First
-- Finding Bridges
 */
 
 //Dependencies
