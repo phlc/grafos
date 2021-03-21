@@ -14,6 +14,15 @@ First Graph's Implementation
 //Dependencies
 #include <iostream>
 
+//Definitions
+//edgeNode - Nó de uma lista de arestas
+typedef struct edgeNode{
+    int v1 = -1;
+    int v2 = -1;
+    edgeNode* next = NULL;
+}edgeNode;
+
+//Namespade
 using namespace std;
 
 /*
@@ -274,5 +283,33 @@ public:
             }
         }
         return n;
+    }
+
+    /*
+    findBridges - Encontra as pontes do grafo.
+    @param - vértice de início
+    @return - arranjo com as arestas pontes.
+    */
+    edgeNode* findBridges(int v){
+        //definitions
+        edgeNode* bridges = new edgeNode;
+        int parent[v_max];
+        int visited[v_max];
+        int discoveryTime[v_max];
+        int time = 0;
+
+        for(int i=0; i<v_max; i++){
+            parent[i]=visited[i]=discoveryTime[i]=-1;
+        }
+        return bridges;
+    }
+
+private:
+    /*findBridges - Overload
+    @param - vértice, edgeNode, parent[], visited[], discoveryTime[], &time 
+    */
+    void findBridges(int v, edgeNode* node, int parent[], int visited[], int discoveryTime[], int &time){
+        
     } 
+public:
 };
