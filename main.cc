@@ -40,7 +40,7 @@ int main(){
     grafo.print();
 
     cout << endl;
-    
+
     int** bridges = grafo.findBridges(0);
 
     //mostrar pontes

@@ -322,12 +322,14 @@ public:
         for (int i=1; i<v_max; i++){
             int v_son = (v+i)%v_max; // todos menos ele próprio
 
-            //verificar se aresta existe
-            if(matrix[v][v_son]!=0){
+            //verificar se aresta existe e se já não foi visitada
+            if(matrix[v][v_son]!=0 && visited[v_son]!=1){
                 //registrar v como pai de v_son - OBS: como v é vértice inicial !precisa verificar se v_son visitado
                 parents[v_son] =  v;
                 //chamar findBridges recursivamente
+cout << "in: " << v_son << endl;
                 findBridges(v_son, bridges, parents, visited, discoveryTime, time);
+cout << "out: " << v_son << endl;
             }
         }
 
@@ -366,11 +368,13 @@ private:
                         //registrar v como pai de v_son
                         parents[v_son] = v;
                         //chamar findBridges recursivamente
-cout << v_son << endl;
+cout << "in: " << v_son << endl;
                         findBridges(v_son, bridges, parents, visited, discoveryTime, time);
+cout << "out: " << v_son << endl;
                     }
                     //se já visitado
-                    else{
+                    //verificar se tempo de entrada pai maior que filho
+                    else if(discoveryTime[v]>discoveryTime[v_son]){
                         //voltar pela árvore até v_son marcando as arestas como não ponte
                         int son = v_son;
                         int parent = v;
@@ -378,11 +382,10 @@ cout << v_son << endl;
                             bridges[parent][son] = -1;
                             //implementação apenas para grafos simples
                             bridges[son][parent] = -1;
-                            int buffer = parent;
-                            parent = parents[parent];
                             son = parent;
-cout << v_son << " " << parent << endl;
-                        }while(parent != v_son);
+                            parent = parents[parent];
+cout << v_son << " " << parent << " " << son << endl;
+                        }while(son != v_son);
                     }
                 } 
             }
