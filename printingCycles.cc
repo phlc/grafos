@@ -16,8 +16,8 @@ using namespace std;
 Main - Main Function
 */
 int main(){
-    Graph grafo = Graph(12, true, false);
-    for (int i=0; i<12; i++){
+    Graph grafo = Graph(6, true, false);
+    for (int i=0; i<6; i++){
         grafo.addVertex();
     }
     grafo.addEdge(0, 1);
