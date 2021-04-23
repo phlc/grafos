@@ -287,6 +287,34 @@ public:
         return n;
     }
 
+    /*
+    nEdges - informa o número de arestas do grafo
+    @return número de arestas
+    */
+    int nEdges(){
+        //valor indicativo de erro
+        int n = -1;
+        if(simple){
+            n++;
+            for(int i=0; i<v_max; i++){
+                for(int j=i+1; j<v_max; j++)
+                {
+                    n+=matrix[i][j];
+                }
+            }
+        }
+        if(simple && directed){
+            for(int i=0; i<v_max; i++){
+                for(int j=i+1; j<v_max; j++)
+                {
+                    n+=matrix[j][i];
+                }
+            }
+        }
+
+        return n;
+    }
+
 // ----------------------------------- Desafio Finding Bridges -------------------------------------------------
 
     /*
@@ -409,7 +437,10 @@ private:
     @return sinal de target encontrado
     */
     int deepFirstSearch(int** mAdj, int n_v, int v1, int v_target, int visited[], int* parents){
-        int signal = 0;
+        //definições
+        int signal = 0; //sinal de parada para v_target encontrado
+
+        //caminhamento
         for (int i=1; i<n_v && signal==0; i++){
             int v2 = (v1+i)%n_v;
             if(mAdj[v1][v2]==1 && visited[v2]==0){
@@ -429,16 +460,22 @@ private:
     @return array de ancestralidade
     */
     int* deepFirstSearch (int** mAdj, int n_v, int v_init, int v_target){
+        //definições
         int visited[n_v];
-        int signal = 0;
+        int signal = 0; //sinal de parada para v_target encontrado
         int* parents = new int[n_v];
+        
+        //inicialização do arrranho de ancestralidade
         for(int i=0; i<n_v;i++){
             visited[i]=0;
             parents[i]=-1;
         }
+
+        //vértice raiz
         parents[v_init] = v_init;
         visited[v_init] =  1;
         
+        //caminhamento
         for (int i=1; i<n_v && signal==0; i++){
             int v2 = (v_init+i)%n_v;
             if(mAdj[v_init][v2]==1 && visited[v2]==0){
@@ -510,11 +547,13 @@ public:
         sTree->directed = this->directed;
         sTree->simple = true;
 
+        //preencher a diagonal principal da matriz da spanningTree
         for(int i=0; i<v_max; i++){
             sTree->matrix[i][i] = this->matrix[i][i];
         }
         int* parents = deepFirstSearch(v);
 
+        //preencher as arestas da matriz da spanningTree
         for(int i=0; i<v_max; i++){
             if(parents[i]!=i && parents[i]!=-1)
                 sTree->matrix[i][parents[i]] = sTree->matrix[parents[i]][i] = 1;
@@ -525,11 +564,27 @@ public:
     /*
     printCycles_walk - Mostra os ciclos encontrados no grafo
     * pressupõe todas posições de vértices na matriz de Adjacência são vértices válidos
+    * implementação apenas para grafos simples - não direcionados
     */
     void printCycles(){
         //criar uma spanning tree a partir do grafo
         Graph sTree = spanningTree(0);
-        sTree.print();
+
+        //Arranjo de matrizes representativas dos grafos fundamentais
+        int nFund = this->nEdges() - sTree.nEdges();
+        int* fundGraphs[nFund];
+
+        //Criar Grafos Fundamentais a partir das Arestas nåo inclusas
+        for(int i=0; i<v_max; i++){
+            for(int j=i+1; j<v_max; j++){
+                //aresta não inclusa na spanningTree
+                if (this->matrix[i][j]!=sTree.matrix[i][j]){
+
+                }
+            }
+        }
+
+
     }
 
 };
