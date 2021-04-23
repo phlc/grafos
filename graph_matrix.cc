@@ -485,41 +485,51 @@ public:
 
 private:
     /*
+    printMatrix - mostra a matriz - static para debug
+    @param matriz, número de vértices
+    */
+    void printMatrix(int** m, int n){
+
+    }
+
+public:
+    /*
     spanningTree - gera uma spanningtree do grafo
     @param vértice de início
     @return grafo representativo da árvore
     */
-    int** spanningTree(int v){
+    Graph spanningTree(int v){
         //verificar se o vértice é válido
         if(v>=v_max || matrix[v][v] == 0)
             return NULL;
 
         //definições
-        int** sTree = new int*[v_max];
+        int** mAdj = new int*[v_max];
+        Graph* sTree = new Graph(this->v_max);
+        sTree->n_vertices = this->n_vertices;
+        sTree->directed = this->directed;
+        sTree->simple = true;
+
         for(int i=0; i<v_max; i++){
-            sTree[i] = new int[v_max];
-            for(int j=0; j<v_max; j++){
-                sTree[i][j] = 0;
-            }
+            sTree->matrix[i][i] = this->matrix[i][i];
         }
         int* parents = deepFirstSearch(v);
 
         for(int i=0; i<v_max; i++){
-            cout << parents[i] << " ";
+            if(parents[i]!=i && parents[i]!=-1)
+                sTree->matrix[i][parents[i]] = sTree->matrix[parents[i]][i] = 1;
         }
-        cout << endl;
-
-        return sTree;
+        return *sTree;
     }
 
-public:
     /*
     printCycles_walk - Mostra os ciclos encontrados no grafo
     * pressupõe todas posições de vértices na matriz de Adjacência são vértices válidos
     */
     void printCycles(){
         //criar uma spanning tree a partir do grafo
-        int ** sTree = spanningTree(5);
+        Graph sTree = spanningTree(0);
+        sTree.print();
     }
 
 };
