@@ -406,17 +406,21 @@ private:
     /*
     deepFirstSearch - Busca por um ou todos os vértices - Recusivo
     @param matriz de Adjacência, número de vértices, vértice de início, vértice procurado
-    @return array de ancestralidade
+    @return sinal de target encontrado
     */
-    void deepFirstSearch(int** mAdj, int n_v, int v1, int v_target, int visited[], int* parents){
-        for (int i=1; i<n_v; i++){
+    int deepFirstSearch(int** mAdj, int n_v, int v1, int v_target, int visited[], int* parents){
+        int signal = 0;
+        for (int i=1; i<n_v && signal==0; i++){
             int v2 = (v1+i)%n_v;
             if(mAdj[v1][v2]==1 && visited[v2]==0){
                 visited[v2]=1;
                 parents[v2]=v1;
-                deepFirstSearch(mAdj, n_v, v2, v_target, visited, parents);
+                if(v2==v_target)
+                    return 1;
+                signal = deepFirstSearch(mAdj, n_v, v2, v_target, visited, parents);
             }
         }    
+        return signal;
     }
 
     /*
@@ -426,20 +430,24 @@ private:
     */
     int* deepFirstSearch (int** mAdj, int n_v, int v_init, int v_target){
         int visited[n_v];
+        int signal = 0;
         int* parents = new int[n_v];
         for(int i=0; i<n_v;i++){
-            visited[i]=parents[i]=0;
+            visited[i]=0;
+            parents[i]=-1;
         }
         parents[v_init] = v_init;
         visited[v_init] =  1;
-
-        for (int i=1; i<n_v; i++){
+        
+        for (int i=1; i<n_v && signal==0; i++){
             int v2 = (v_init+i)%n_v;
             if(mAdj[v_init][v2]==1 && visited[v2]==0){
                 visited[v2]=1;
                 parents[v2] = v_init;
-                if(v2!=v_target)
-                    deepFirstSearch(mAdj, n_v, v2, v_target, visited, parents);
+                if(v2==v_target)
+                    i=n_v;
+                else
+                   signal = deepFirstSearch(mAdj, n_v, v2, v_target, visited, parents);
             }
         }
 
