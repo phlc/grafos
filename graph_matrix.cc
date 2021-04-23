@@ -12,6 +12,9 @@ First Graph's Implementation
 
 Desafio 1
 - Finding Bridges
+
+Desafio 2 
+- Printing Cycles
 */
 
 //Dependencies
@@ -19,6 +22,10 @@ Desafio 1
 
 //Namespade
 using namespace std;
+
+
+//--------------------------------- Implementação do Grafo ----------------------------------------------------
+
 
 /*
 Graph Class - Classe de Implementação dos Grafos
@@ -280,6 +287,8 @@ public:
         return n;
     }
 
+// ----------------------------------- Desafio Finding Bridges -------------------------------------------------
+
     /*
     findBridges - Encontra as pontes do grafo.
     @param - vértice de início
@@ -346,7 +355,8 @@ public:
     }
 
 private:
-    /*findBridges - Overload
+    /*
+    findBridges - Overload
     @param - vértice, edgeNode, parents[], visited[], discoveryTime[], &time 
     */
     void findBridges(int v, int** bridges, int parents[], int visited[], int discoveryTime[], int &time){
@@ -389,5 +399,119 @@ private:
             }
         }
     } 
+
+
+// --------------------------------------- Desafio Printing Cycles ------------------------------------------------
+private:
+    /*
+    deepFirstSearch - Busca por um ou todos os vértices - Recusivo
+    @param matriz de Adjacência, número de vértices, vértice de início, vértice procurado
+    @return array de ancestralidade
+    */
+    void deepFirstSearch(int** mAdj, int n_v, int v1, int v_target, int visited[], int* parents){
+        for (int i=1; i<n_v; i++){
+            int v2 = (v1+i)%n_v;
+            if(mAdj[v1][v2]==1 && visited[v2]==0){
+                visited[v2]=1;
+                parents[v2]=v1;
+                deepFirstSearch(mAdj, n_v, v2, v_target, visited, parents);
+            }
+        }    
+    }
+
+    /*
+    deepFirstSearch - Busca por um ou todos os vértices
+    @param matriz de Adjacência, número de vértices, vértice de início, vértice procurado
+    @return array de ancestralidade
+    */
+    int* deepFirstSearch (int** mAdj, int n_v, int v_init, int v_target){
+        int visited[n_v];
+        int* parents = new int[n_v];
+        for(int i=0; i<n_v;i++){
+            visited[i]=parents[i]=0;
+        }
+        parents[v_init] = v_init;
+        visited[v_init] =  1;
+
+        for (int i=1; i<n_v; i++){
+            int v2 = (v_init+i)%n_v;
+            if(mAdj[v_init][v2]==1 && visited[v2]==0){
+                visited[v2]=1;
+                parents[v2] = v_init;
+                if(v2!=v_target)
+                    deepFirstSearch(mAdj, n_v, v2, v_target, visited, parents);
+            }
+        }
+
+        return parents;
+    }
+
+    /*
+    deepFirstSearch - Overload - Passar por todo o grafo
+    @param matriz de Adjacência, número de vértices, vértice de início.
+    @return array de ancestralidade
+    */
+    int* deepFirstSearch (int** mAdj, int n_v, int v_init){
+        return deepFirstSearch(mAdj, n_v, v_init, -1);
+    }
+
 public:
+    /*
+    deepFirstSearch - Overload - Chamada do Objeto
+    @param vértice de início, vértice procurado.
+    @return array de ancestralidade
+    */
+    int* deepFirstSearch (int v_init, int v_target){
+        return deepFirstSearch(matrix, v_max, v_init, v_target);
+    }
+
+    /*
+    deepFirstSearch - Overload - Chamada do Objeto - Passar por todo grafo
+    @param vértice de início,.
+    @return array de ancestralidade
+    */
+    int* deepFirstSearch (int v_init){
+        return deepFirstSearch(matrix, v_max, v_init, -1);
+    }
+
+
+private:
+    /*
+    spanningTree - gera uma spanningtree do grafo
+    @param vértice de início
+    @return grafo representativo da árvore
+    */
+    int** spanningTree(int v){
+        //verificar se o vértice é válido
+        if(v>=v_max || matrix[v][v] == 0)
+            return NULL;
+
+        //definições
+        int** sTree = new int*[v_max];
+        for(int i=0; i<v_max; i++){
+            sTree[i] = new int[v_max];
+            for(int j=0; j<v_max; j++){
+                sTree[i][j] = 0;
+            }
+        }
+        int* parents = deepFirstSearch(v);
+
+        for(int i=0; i<v_max; i++){
+            cout << parents[i] << " ";
+        }
+        cout << endl;
+
+        return sTree;
+    }
+
+public:
+    /*
+    printCycles_walk - Mostra os ciclos encontrados no grafo
+    * pressupõe todas posições de vértices na matriz de Adjacência são vértices válidos
+    */
+    void printCycles(){
+        //criar uma spanning tree a partir do grafo
+        int ** sTree = spanningTree(5);
+    }
+
 };
