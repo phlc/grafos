@@ -562,7 +562,34 @@ public:
         }
         return *sTree;
     }
+private:
+    /*
+    toBinary - Preenche um arranjo com a representação binária de um número
+    @param tamanho, arranjo, número
+    */
+    void toBinary(int t, int arr[], int n){
+        for (int i=0; i<t; i++){
+            int remainder = n%2;
+            n/=2;
+            arr[i] = remainder;
+        }
+    }
 
+    /*
+    power - Calcula n elevado a e
+    @param int n, int e
+    @return int resultado
+    */
+    int power(int n, int e){
+        int result = 1;
+        while(e>0){
+            result*=n;
+            e--;
+        }
+        return result;
+    }
+
+public:
     /*
     printCycles_walk - Mostra os ciclos encontrados no grafo
     * pressupõe todas posições de vértices na matriz de Adjacência são vértices válidos
@@ -576,8 +603,6 @@ public:
         int nFund = this->nEdges() - sTree.nEdges();
         int index = 0;
         Graph* fundGraphs[nFund];
-
-sTree.print();
 
         //Criar Grafos dos Ciclos Fundamentais a partir das Arestas nåo inclusas
         for(int i=0; i<v_max; i++){
@@ -597,14 +622,6 @@ sTree.print();
                     //aresta que gera o ciclo fundamental
                     fundGraphs[index]->matrix[i][j] = 1;
                     fundGraphs[index]->matrix[j][i] = 1;
-cout << endl << endl << i << " " << j << endl;
-for(int q=0; q<v_max; q++){
-    cout << path_i[q] << " ";
-}
-cout << endl;
-for(int q=0; q<v_max; q++){
-    cout << path_j[q] << " ";
-}
 
                     for(int k=0; k<this->v_max; k++){
                         if(path_i[k]!=path_j[k]){
@@ -626,10 +643,19 @@ for(int q=0; q<v_max; q++){
                             }
                         }
                     }
-fundGraphs[index]->print();
                     index++;
                 }
             }
-        }        
+        }
+        // Gerar todas combinações possíveis de ciclos fundamentais
+        int nComb =  power(2, nFund) -1; //numero de combinações (vazio excluído)
+        int bin[nFund];
+        for(int i=1; i<=nComb; i++){
+            toBinary(nFund, bin, i);
+            for (int j=0; j<nFund; j++){
+                
+            }
+        }
+
     }
 };
