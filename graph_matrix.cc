@@ -474,6 +474,8 @@ private:
         //vértice raiz
         parents[v_init] = v_init;
         visited[v_init] =  1;
+        if(v_init == v_target) 
+            signal = 1;
         
         //caminhamento
         for (int i=1; i<n_v && signal==0; i++){
@@ -572,19 +574,62 @@ public:
 
         //Arranjo de matrizes representativas dos grafos fundamentais
         int nFund = this->nEdges() - sTree.nEdges();
-        int* fundGraphs[nFund];
+        int index = 0;
+        Graph* fundGraphs[nFund];
 
-        //Criar Grafos Fundamentais a partir das Arestas nåo inclusas
+sTree.print();
+
+        //Criar Grafos dos Ciclos Fundamentais a partir das Arestas nåo inclusas
         for(int i=0; i<v_max; i++){
             for(int j=i+1; j<v_max; j++){
                 //aresta não inclusa na spanningTree
                 if (this->matrix[i][j]!=sTree.matrix[i][j]){
+                    //caminho até cada vértice
+                    int* path_i = sTree.deepFirstSearch(0, i);
+                    int* path_j = sTree.deepFirstSearch(0, j);
 
+                    //Construir Grafo Ciclo
+                    fundGraphs[index] = new Graph(this->v_max);
+                    fundGraphs[index]->n_vertices = this->n_vertices;
+                    fundGraphs[index]->directed = this->directed;
+                    fundGraphs[index]->simple = true;
+
+                    //aresta que gera o ciclo fundamental
+                    fundGraphs[index]->matrix[i][j] = 1;
+                    fundGraphs[index]->matrix[j][i] = 1;
+cout << endl << endl << i << " " << j << endl;
+for(int q=0; q<v_max; q++){
+    cout << path_i[q] << " ";
+}
+cout << endl;
+for(int q=0; q<v_max; q++){
+    cout << path_j[q] << " ";
+}
+
+                    for(int k=0; k<this->v_max; k++){
+                        if(path_i[k]!=path_j[k]){
+                            if(path_i[k]!= -1){
+                                //arestas
+                                fundGraphs[index]->matrix[path_i[k]][k] = 1;
+                                fundGraphs[index]->matrix[k][path_i[k]] = 1;
+                                //diagonal
+                                fundGraphs[index]->matrix[k][k] = 1;
+                                fundGraphs[index]->matrix[path_i[k]][path_i[k]]=1;
+                            }
+                            if(path_j[k]!= -1){
+                                //arestas
+                                fundGraphs[index]->matrix[path_j[k]][k] = 1;
+                                fundGraphs[index]->matrix[k][path_j[k]] = 1;
+                                //diagonal
+                                fundGraphs[index]->matrix[k][k] = 1;
+                                fundGraphs[index]->matrix[path_j[k]][path_j[k]]=1;
+                            }
+                        }
+                    }
+fundGraphs[index]->print();
+                    index++;
                 }
             }
-        }
-
-
+        }        
     }
-
 };
