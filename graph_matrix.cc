@@ -315,6 +315,54 @@ public:
         return n;
     }
 
+    /* 
+    isConnected - Verica se um grafo é conexo
+    @return bool 
+    */
+    bool isConnected(){
+        int nV1 = 0;
+        int nV2 = 0;
+        int v_init = 0;
+
+        while(this->matrix[v_init][v_init] != 1){
+            v_init++;
+        }
+
+        int* parents = this->deepFirstSearch(v_init);
+        for(int i=0; i<v_max; i++){
+            if(this->matrix[i][i]==1){
+                nV1++;
+            }
+            if(parents[i] != -1){
+                nV2++;
+            }
+        }
+        return nV1==nV2;
+    }
+
+    /*
+    isRegular - Verificar se o grafo é regular no grau d
+    @param int d
+    @return bool
+    */
+    bool isRegular(int d){
+        bool answer = false;
+        if(!this->isDirected()){
+            answer = true;
+            for(int i=0; i<this->v_max && answer; i++){
+                if(this->matrix[i][i]==1){
+                    int degree = 0;
+                    for(int j=(i+1); i!=j; j=(j+1)%this->v_max){
+                        degree += this->matrix[i][j];
+                    }
+                    if(degree!=d){
+                        answer=false;
+                    }
+                }
+            }
+        }
+        return answer;
+    }
 // ----------------------------------- Desafio Finding Bridges -------------------------------------------------
 
     /*
@@ -567,7 +615,7 @@ private:
     toBinary - Preenche um arranjo com a representação binária de um número
     @param tamanho, arranjo, número
     */
-    void toBinary(int t, int arr[], int n){
+    static void toBinary(int t, int arr[], int n){
         for (int i=0; i<t; i++){
             int remainder = n%2;
             n/=2;
@@ -580,7 +628,7 @@ private:
     @param int n, int e
     @return int resultado
     */
-    int power(int n, int e){
+    static int power(int n, int e){
         int result = 1;
         while(e>0){
             result*=n;
@@ -589,7 +637,32 @@ private:
         return result;
     }
 
+    /* xorGraph - Realiza a operação XOR entre cada posição das matrizes de dois grafos (objeto e parâmetro)
+    @param Graph*
+    @return Graph*
+    */
+    Graph* xorGraph(Graph* graph2){
+        Graph* answer = new Graph(this->v_max);
+        answer->n_vertices = this->n_vertices;
+        for(int i=0; i<this->v_max; i++){
+            for(int j=i+1; j<this->v_max; j++){
+                if(this->matrix[i][j]!=graph2->matrix[i][j]){
+                    answer->matrix[i][j] = 1;
+                    answer->matrix[j][i] = 1;
+                    answer->matrix[i][i] = 1;
+                    answer->matrix[j][j] = 1;
+                }
+                else{
+                    answer->matrix[i][j] = 0;
+                    answer->matrix[j][i] = 0;
+                }
+            }
+        }
+        return answer;
+    }
+
 public:
+
     /*
     printCycles_walk - Mostra os ciclos encontrados no grafo
     * pressupõe todas posições de vértices na matriz de Adjacência são vértices válidos
@@ -647,15 +720,27 @@ public:
                 }
             }
         }
-        // Gerar todas combinações possíveis de ciclos fundamentais
+        // Gerar todas combinações possíveis dos ciclos fundamentais
         int nComb =  power(2, nFund) -1; //numero de combinações (vazio excluído)
         int bin[nFund];
+        int n = 0;
         for(int i=1; i<=nComb; i++){
+            Graph* cycle = new Graph(this->v_max);
             toBinary(nFund, bin, i);
             for (int j=0; j<nFund; j++){
-                
+                if(bin[j]==1){
+                    Graph* buffer = cycle;
+                    cycle = cycle->xorGraph(fundGraphs[j]);
+                    delete buffer;
+                }
             }
+            if(cycle->isConnected() && cycle->isRegular(2)){
+                cout << endl << endl << i << endl;
+                cycle->print();
+                n++;
+            }
+            delete cycle;
         }
-
+        cout << "Número de Ciclos: " << n << endl;
     }
 };
