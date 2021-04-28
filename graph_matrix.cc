@@ -92,9 +92,9 @@ public:
     //Destructor
     ~Graph(){
         for(int i=0; i<v_max; i++){
-            delete[] matrix[i];
+            delete matrix[i];
         }
-        delete[] matrix;
+        delete matrix;
     }
     
     //Methods
@@ -664,7 +664,7 @@ private:
 public:
 
     /*
-    printCycles_walk - Mostra os ciclos encontrados no grafo
+    printCycles - Mostra os ciclos encontrados no grafo
     * pressupõe todas posições de vértices na matriz de Adjacência são vértices válidos
     * implementação apenas para grafos simples - não direcionados
     */
@@ -742,5 +742,134 @@ public:
             delete cycle;
         }
         cout << "Número de Ciclos: " << n << endl;
+    }
+
+// ------------------------ Utilizando Permutações --------------------------
+private:
+
+    /*
+    fact - Calcula o fatorial de um número
+    @param int n
+    @return int fact ou -1 se n negativo
+    */
+    static int fact(int n){
+        if(n>0)
+            return (n*fact(n-1));
+        else if(n==0)
+            return 1;
+        else 
+            return -1;
+    }
+
+    /*
+    nArrays - calcula o número de arrajos An,p
+    @param int n, int p
+    @return int permutations
+    */
+    static int nArrays(int n, int p){
+        return (fact(n)/fact(n-p));
+    }
+
+
+public:
+
+    /*
+    Classe Array - arranjo com tamanho
+    */
+    class array{
+    public:
+        int size;
+        int* arr;
+        array* next;
+
+        array(int size){
+            this->size = size;
+            arr = new int[size];
+            next = NULL;
+        }
+
+        void normalize(){
+            //descobrir o menor
+            int min = arr[0];
+            int pos_min = 0;
+            for(int i=1; i<this->size; i++){
+                if(arr[i]<min){
+                    min = arr[i];
+                    pos_min = i;
+                }
+            }
+            //rotacionar
+            for(int i=0; i<pos_min; i++){
+                int buffer = arr[0];
+                for(int i=1; i<this->size; i++){
+                    arr[i-1]=arr[i];
+                }
+                arr[this->size-1]=buffer;
+            }
+        }
+
+        void print(){
+            cout << "[ ";
+            for(int i=0; i<this->size; i++){
+                cout << arr[i] << " "; 
+            }
+            cout << "]" << endl;
+        }
+    };
+
+    /*
+    Classe arraySet- Conjunto de arranjos
+    */
+    class arrayStack{
+    public:
+        array* top;
+
+        arrayStack(){
+            top = NULL;
+        }
+
+        void push(array* input){
+            input->normalize();
+            if(!this->check(input)){
+                array* buffer = top;
+                top = input;
+                input->next = buffer;
+            }
+        }
+
+        bool check(array* input){
+            bool answer = false;
+            for(array* i=top; i!=NULL && !answer; i=i->next){
+                if(input->size == i->size){
+                    answer = true;
+                    for(int j=0; j< i->size && answer; j++){
+                        if(input->arr[j] != i->arr[j])
+                            answer = false;
+                    }
+                }
+            }
+            return answer;
+        }
+
+        void print(){
+            for(array* i=top; i!=NULL; i=i->next){
+                cout << "[ ";
+                for(int j=0; j< i->size; j++){
+                    cout << i->arr[j] << " ";
+                }
+                cout << "]" << endl;
+            }
+        }
+    };
+    
+    /*
+    printCyclesPermutations - Mostra os ciclos encontrados no grafo através de permutações
+    * implementação apenas para grafos simples - não direcionados
+    */
+    void printCyclesPermutation(){
+        arrayStack set = arrayStack();
+
+    
+
     }
 };

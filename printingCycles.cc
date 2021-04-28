@@ -33,7 +33,8 @@ int main(){
     grafo.addEdge(4, 5);
     grafo.print();
 
-    grafo.printCycles();
+    //grafo.printCycles();
+    grafo.printCyclesPermutation();
     
     cout << endl;
 
