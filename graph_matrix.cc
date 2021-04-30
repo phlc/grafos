@@ -744,7 +744,7 @@ public:
         cout << "Número de Ciclos: " << n << endl;
     }
 
-// ------------------------ Utilizando Permutações --------------------------
+// ----------------------------- Utilizando Permutações ------------------------------
 private:
 
     /*
@@ -782,12 +782,16 @@ public:
         int* arr;
         array* next;
 
+        // Construtor
         array(int size){
             this->size = size;
             arr = new int[size];
             next = NULL;
         }
 
+        /*
+        normalize - normaliza o arranjo para evitar arranjos diferentes que representam o mesmo ciclo
+        */
         void normalize(){
             //descobrir o menor
             int min = arr[0];
@@ -808,6 +812,9 @@ public:
             }
         }
 
+        /*
+        print - mostra o arranjo
+        */
         void print(){
             cout << "[ ";
             for(int i=0; i<this->size; i++){
@@ -815,6 +822,17 @@ public:
             }
             cout << "]" << endl;
         }
+
+        /*
+        copy - copia um arranjo
+        */
+        array* copy(){
+            array* cp = new array(this->size);
+            for(int i=0; i<cp->size; i++){
+                cp->arr[i] = this->arr[i];
+            }
+            return cp;
+        } 
     };
 
     /*
@@ -824,19 +842,16 @@ public:
     public:
         array* top;
 
+        //contrutor
         arrayStack(){
             top = NULL;
         }
 
-        void push(array* input){
-            input->normalize();
-            if(!this->check(input)){
-                array* buffer = top;
-                top = input;
-                input->next = buffer;
-            }
-        }
-
+        /*
+        check - Verifica se o arrajo já está no conjunto
+        @param array
+        @return bool 
+        */
         bool check(array* input){
             bool answer = false;
             for(array* i=top; i!=NULL && !answer; i=i->next){
@@ -849,15 +864,87 @@ public:
                 }
             }
             return answer;
+        }   
+
+        /*
+        push - insere um arranjo do conjunto
+        Obs: Antes o arranjo é normalizado e testado para não inserir arranjos representativos do mesmo ciclo
+        @param array
+        */
+        void push(array* input){
+
+            input->normalize();
+            array reverse_input = array(input->size);
+            //criar arranjo invertido para confêrencia
+            int last = reverse_input.size-1;
+            int half = (last)/2;
+            for(int i=0; i<=half; i++){
+                reverse_input.arr[i] = input->arr[last-i];
+                reverse_input.arr[last-i] =  input->arr[i];
+            }
+            reverse_input.normalize();
+            if(!this->check(input) && !this->check(&reverse_input)){
+                array* buffer = top;
+                top = input;
+                input->next = buffer;
+            }
         }
 
-        void print(){
+        /*
+        print - mostra o conjunto
+        @return int n arranjos
+        */
+        int print(){
+            int n = 0;
             for(array* i=top; i!=NULL; i=i->next){
-                cout << "[ ";
-                for(int j=0; j< i->size; j++){
-                    cout << i->arr[j] << " ";
+                i->print();
+                n++;
+            }
+            return n;
+        }
+
+        /*
+        generate - Recursivo - Insere arranjos (An,p)
+        @param int n, int p, int bucket[], in
+        */
+    private:
+        void generate(int n, int p, int in, array bucket, array* a){
+            if(in < p){
+                int pos = 0;
+                for( int i=0; i< n-in; i++){
+                    while(bucket.arr[pos]==0){
+                        pos++;
+                    }
+                    a->arr[in] = pos;
+                    bucket.arr[pos]=0;
+                    generate(n, p, in+1, bucket, a->copy());
+                    bucket.arr[pos]=1;
+                    pos++;
                 }
-                cout << "]" << endl;
+            }
+            else{
+                this->push(a);
+            }
+        }
+
+    public:
+        /*
+        generate - insere no conjunto das permutacoes de arranjos com 3 a n elementos
+        Elementos de 0 a n-1
+        @param int n
+        */  
+        void generate(int n){
+            array bucket = array(n);
+
+            //inicializar bucket com 1 (número no bucket)
+            for(int i=0; i<n; i++){
+                bucket.arr[i] = 1;
+            }
+            
+            //gerar A(p,n)
+            for(int i=3; i<=n; i++){
+                array* a = new array(i);
+                generate(n, i, 0, bucket, a);
             }
         }
     };
@@ -869,7 +956,8 @@ public:
     void printCyclesPermutation(){
         arrayStack set = arrayStack();
 
-    
-
+        set.generate(6);
+        cout << endl;
+        cout << set.print() << endl;
     }
 };
