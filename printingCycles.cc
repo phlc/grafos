@@ -33,9 +33,16 @@ int main(){
     grafo.addEdge(4, 5);
     grafo.print();
 
-    //grafo.printCycles();
+    cout << endl << endl <<" ------------------- Finding Cycles with XOR of Fundamental Cycles ----------------------- " << endl;
+
+    //printCycles;
+    grafo.printCycles();
+
+    cout << endl << endl <<" ---------------------- Finding Cycles with Permutations Cycles -------------------------- " << endl;
+
+    //printCyclesPermutation
     grafo.printCyclesPermutation();
-    
+
     cout << endl;
 
 }

@@ -735,13 +735,12 @@ public:
                 }
             }
             if(cycle->isConnected() && cycle->isRegular(2)){
-                cout << endl << endl << i << endl;
                 cycle->print();
                 n++;
             }
             delete cycle;
         }
-        cout << "Número de Ciclos: " << n << endl;
+        cout << endl << "Número de Ciclos: " << n << endl;
     }
 
 // ----------------------------- Utilizando Permutações ------------------------------
@@ -891,6 +890,19 @@ public:
         }
 
         /*
+        pop - retira um arranjo do conjuto
+        @return array
+        */
+        array* pop(){
+            array* popped = NULL;
+            if(top!=NULL){
+                popped = top;
+                top = top->next;
+            }
+            return popped;
+        }
+
+        /*
         print - mostra o conjunto
         @return int n arranjos
         */
@@ -948,6 +960,31 @@ public:
             }
         }
     };
+
+
+    /* andGraph - Realiza a operação AND entre cada posição das matrizes de dois grafos (objeto e parâmetro)
+    @param Graph*
+    @return Graph*
+    */
+    Graph* andGraph(Graph* graph2){
+        Graph* answer = new Graph(this->v_max);
+        answer->n_vertices = this->n_vertices;
+        for(int i=0; i<this->v_max; i++){
+            for(int j=i+1; j<this->v_max; j++){
+                if(this->matrix[i][j]==1 && graph2->matrix[i][j]==1){
+                    answer->matrix[i][j] = 1;
+                    answer->matrix[j][i] = 1;
+                    answer->matrix[i][i] = 1;
+                    answer->matrix[j][j] = 1;
+                }
+                else{
+                    answer->matrix[i][j] = 0;
+                    answer->matrix[j][i] = 0;
+                }
+            }
+        }
+        return answer;
+    }
     
     /*
     printCyclesPermutations - Mostra os ciclos encontrados no grafo através de permutações
@@ -955,9 +992,26 @@ public:
     */
     void printCyclesPermutation(){
         arrayStack set = arrayStack();
-
+        array* a;
+        int n=0;
         set.generate(6);
+        a = set.pop();
         cout << endl;
-        cout << set.print() << endl;
+        while(a!=NULL){
+            Graph* cycle = new Graph(this->v_max);
+            for(int i=0; i<a->size; i++){
+                cycle->matrix[a->arr[i]][a->arr[(i+1)%a->size]] = 1;
+                cycle->matrix[a->arr[(i+1)%a->size]][a->arr[i]] = 1;
+                cycle->matrix[a->arr[i]][a->arr[i]] = 1;
+            }
+            cycle = this->andGraph(cycle);
+            if(cycle->isConnected() && cycle->isRegular(2)){
+                cycle->print();
+                n++;
+            }
+            a=set.pop();
+        }
+        cout << endl << "Número de Ciclos: " << n << endl;
+
     }
 };
